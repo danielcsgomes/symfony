@@ -881,6 +881,25 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
 
         return $dispatcher;
     }
+
+    public function testSetRunCustomDefaultCommand()
+    {
+        $application = new Application();
+        $application->setAutoExit(false);
+        $application->setDefaultCommand(new \FooCommand());
+
+        $tester = new ApplicationTester($application);
+        $tester->run(array());
+        $this->assertEquals('interact called' . PHP_EOL . 'called' . PHP_EOL, $tester->getDisplay(), 'Application runs the default setted command if different from \'list\' command');
+
+        $application = new CustomDefaultCommandApplication();
+        $application->setAutoExit(false);
+
+        $tester = new ApplicationTester($application);
+        $tester->run(array());
+
+        $this->assertEquals('interact called' . PHP_EOL . 'called' . PHP_EOL, $tester->getDisplay(), 'Application runs the default setted command if different from \'list\' command');
+    }
 }
 
 class CustomApplication extends Application
@@ -903,5 +922,18 @@ class CustomApplication extends Application
     protected function getDefaultHelperSet()
     {
         return new HelperSet(array(new FormatterHelper()));
+    }
+}
+
+class CustomDefaultCommandApplication extends Application
+{
+
+    /**
+     * Overwrites the constructor in order to set a different default command.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDefaultCommand(new \FooCommand());
     }
 }

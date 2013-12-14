@@ -67,6 +67,7 @@ class Application
     private $helperSet;
     private $dispatcher;
     private $terminalDimensions;
+    private $defaultCommand;
 
     /**
      * Constructor.
@@ -80,6 +81,7 @@ class Application
     {
         $this->name = $name;
         $this->version = $version;
+        $this->defaultCommand = 'list';
         $this->helperSet = $this->getDefaultHelperSet();
         $this->definition = $this->getDefaultInputDefinition();
 
@@ -180,8 +182,8 @@ class Application
         }
 
         if (!$name) {
-            $name = 'list';
-            $input = new ArrayInput(array('command' => 'list'));
+            $name = $this->defaultCommand;
+            $input = new ArrayInput(array('command' => $this->defaultCommand));
         }
 
         // the command name MUST be the first element of the input
@@ -1085,5 +1087,16 @@ class Application
         asort($alternatives);
 
         return array_keys($alternatives);
+    }
+
+    /**
+     * Sets and adds a default Command instead of using the ListCommand
+     *
+     * @param Command $command The Command
+     */
+    public function setDefaultCommand(Command $command)
+    {
+        $this->add($command);
+        $this->defaultCommand = $command->getName();
     }
 }
